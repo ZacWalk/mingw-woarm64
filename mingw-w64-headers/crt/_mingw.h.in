@@ -598,8 +598,16 @@ __MINGW_INTRIN_INLINE void __cdecl __debugbreak(void)
 #define __MINGW_FASTFAIL_IMPL 1
 #endif
 #if __MINGW_FASTFAIL_IMPL == 1
-void __cdecl __MINGW_ATTRIB_NORETURN __fastfail(unsigned int code);
-__MINGW_INTRIN_INLINE void __cdecl __MINGW_ATTRIB_NORETURN __fastfail(unsigned int code)
+#if defined(__aarch64__)
+/* Inline fails for aarch64 */
+#define __MINGW_FASTFAIL_INLINE_DECL static
+#define __MINGW_FASTFAIL_INLINE static inline
+#else
+#define __MINGW_FASTFAIL_INLINE_DECL
+#define __MINGW_FASTFAIL_INLINE __MINGW_INTRIN_INLINE
+#endif
+__MINGW_FASTFAIL_INLINE_DECL void __cdecl __MINGW_ATTRIB_NORETURN __fastfail(unsigned int code);
+__MINGW_FASTFAIL_INLINE void __cdecl __MINGW_ATTRIB_NORETURN __fastfail(unsigned int code)
 {
 #if defined(__i386__) || defined(__x86_64__)
   __asm__ __volatile__("int {$}0x29"::"c"(code));
